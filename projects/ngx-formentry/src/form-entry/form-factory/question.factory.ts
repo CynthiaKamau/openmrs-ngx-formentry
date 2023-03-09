@@ -27,13 +27,18 @@ import { CheckBoxQuestion } from '../question-models/models';
 import { RadioButtonQuestion } from '../question-models/models';
 import { Injectable } from '@angular/core';
 import { CustomControlQuestion } from '../question-models/custom-control-question.model';
+import { MachineLearningService } from '../services/machine-learning.service';
 
 @Injectable()
 export class QuestionFactory {
+  constructor(
+    private machineLearningService: MachineLearningService,
+    ) { }
+
   dataSources: any = {};
-  historicalHelperService: HistoricalHelperService = new HistoricalHelperService();
+  historicalHelperService: HistoricalHelperService = new HistoricalHelperService(this.machineLearningService);
   quetionIndex = 0;
-  constructor() {}
+
 
   createQuestionModel(formSchema: any, form?: Form): QuestionBase {
     if (form) {

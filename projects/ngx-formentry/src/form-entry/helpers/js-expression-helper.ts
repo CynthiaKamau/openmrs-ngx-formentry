@@ -1,15 +1,34 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { southEastAsiaCvdRiskTables } from './risk-dataset-table';
+import { tap } from 'rxjs/operators';
+import { MachineLearningService } from '@openmrs/ngx-formentry';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class JsExpressionHelper {
+
+  myEvents: any;
+  constructor(
+    private machineLearningService: MachineLearningService,
+  ) { }
+
   calcBMI(height, weight) {
     let r;
     if (height && weight) {
       r = (weight / (((height / 100) * height) / 100)).toFixed(1);
     }
     return height && weight ? parseFloat(r) : null;
+  }
+
+  evaluateML(...args) {
+    console.log("args", args)
+
+    return this.machineLearningService.getHTSRiskScore(args)
+    .subscribe((response)=> { this.myEvents = response;
+      console.log(this.myEvents); //<-- not undefined anymore)
+    })
+
   }
 
   calcBSA(height: number, weight: number) {
@@ -276,7 +295,7 @@ export class JsExpressionHelper {
    * @param uuid
    * @returns
    */
-  getObsFromControlOrEncounter(targetControl,rawEncounter,uuid): any {
+  getObsFromControlOrEncounter(targetControl, rawEncounter, uuid): any {
     const findObs = (obs, uuid) => {
       let result;
       obs?.some(o => result = o?.concept?.uuid === uuid ? o : findObs(o.groupMembers || [], uuid));
@@ -298,7 +317,8 @@ export class JsExpressionHelper {
       isEmpty: helper.isEmpty,
       arrayContains: helper.arrayContains,
       extractRepeatingGroupValues: helper.extractRepeatingGroupValues,
-      getObsFromControlOrEncounter: helper.getObsFromControlOrEncounter
+      getObsFromControlOrEncounter: helper.getObsFromControlOrEncounter,
+      evaluateML: helper.evaluateML
     };
   }
 }

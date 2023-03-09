@@ -1,3 +1,5 @@
+export { MachineLearningService } from '../form-entry/services/machine-learning.service';
+
 /*
  * Public API Surface of ngx-formentry
  */
@@ -59,3 +61,4 @@ export { ErrorRendererComponent } from '../form-entry/error-renderer/error-rende
 export { DatePickerComponent } from '../components/date-time-picker';
 export { TimePickerComponent } from '../components/date-time-picker';
 export { MomentPipe } from '../components/date-time-picker';
+

@@ -2,6 +2,7 @@ import { Component, OnChanges, Input } from '@angular/core';
 
 import { LeafNode } from '../../form-entry/form-factory/form-node';
 import moment from 'moment';
+import { FormControlService } from '../../public_api';
 
 @Component({
   selector: 'ofe-appointments-overview',
@@ -16,23 +17,25 @@ export class AppointmentsOverviewComponent implements OnChanges {
   appointmentsLoaded = false;
   appointments: Array<any> = [];
   today = '';
-  constructor() {}
 
   ngOnChanges() {
     this.node.control.valueChanges.subscribe((appointmentDate) => {
       this.resetProperties();
       const node = this.node;
+      console.log("node", node)
       if (
         node.question.extras.questionOptions.concept &&
         (node.question.extras.questionOptions.concept ===
           'a8a666ba-1350-11df-a1f1-0026b9348838' ||
           node.question.extras.questionOptions.concept ===
-            'a89d2398-1350-11df-a1f1-0026b9348838')
+          'a8a666ba-1350-11df-a1f1-0026b9348838')
       ) {
         if (!this.showAppointments) {
           this.loadingAppointments = true;
           this.showAppointments = true;
           let dataSource;
+          console.log("---appointment node", node.form.dataSourcesContainer.dataSources)
+          console.log("---appointment service", node.form.dataSourcesContainer.dataSources.monthlyScheduleResourceService)
           if (node.form && node.form.dataSourcesContainer.dataSources) {
             dataSource =
               node.form.dataSourcesContainer.dataSources

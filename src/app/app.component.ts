@@ -14,10 +14,10 @@ import {
   EncounterAdapter,
   DataSources,
   FormErrorsService,
+  MachineLearningService
 } from '@openmrs/ngx-formentry';
 import { MockObs } from './mock/mock-obs';
 import { mockTranslationsData } from './mock/mock-translations';
-
 const adultForm = require('./adult-1.6.json');
 const adultFormObs = require('./mock/obs.json');
 const formOrdersPayload = require('./mock/orders.json');
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
     private formErrorsService: FormErrorsService,
     private http: HttpClient,
     private translate: TranslateService,
-
+    private machineLearningService: MachineLearningService
   ) {
     this.schema = adultForm;
   }
@@ -72,6 +72,7 @@ export class AppComponent implements OnInit {
       searchOptions: this.sampleSearch,
       resolveSelectedValue: this.sampleResolve
     });
+
     this.dataSources.registerDataSource('provider', {
       searchOptions: this.sampleSearch,
       resolveSelectedValue: this.sampleResolve
@@ -107,6 +108,7 @@ export class AppComponent implements OnInit {
     };
 
     this.dataSources.registerDataSource('conceptAnswers', ds);
+    // this.dataSources.registerDataSource('htsMLPrediction', this.machineLearningService);
 
     const obs = new MockObs();
     this.dataSources.registerDataSource('rawPrevEnc', obs.getObs());
@@ -379,7 +381,7 @@ export class AppComponent implements OnInit {
 
       // Alternative is to populate for each as shown below
       // // generate obs payload
-      // let payload = this.obsValueAdapater.generateFormPayload(this.form);
+      let payload = this.obsValueAdapater.generateFormPayload(this.form);
 
       // // generate orders payload
       // let ordersPayload = this.orderAdaptor.generateFormPayload(this.form);

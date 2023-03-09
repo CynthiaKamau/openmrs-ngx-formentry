@@ -24,4 +24,8 @@ export class DataSources {
   clearDataSource(key: string) {
     delete this._dataSources[key];
   }
+
+  getDataSources(){
+    return this.dataSources;
+  }
 }

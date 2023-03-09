@@ -7,10 +7,13 @@ import {
   ExpressionRunner
 } from '../expression-runner/expression-runner';
 import { AfeFormControl } from '../../abstract-controls-extension/afe-form-control';
+import { MachineLearningService } from '../services/machine-learning.service';
 
 @Injectable()
 export class HistoricalHelperService {
-  constructor() {}
+  constructor(
+    private machineLearningService: MachineLearningService,
+  ) { }
 
   public evaluate(
     expr: string,
@@ -34,7 +37,7 @@ export class HistoricalHelperService {
       }
     }
 
-    const helper = new JsExpressionHelper();
+    const helper = new JsExpressionHelper(this.machineLearningService);
     const control: AfeFormControl = new AfeFormControl();
     const runner: ExpressionRunner = new ExpressionRunner();
     const runnable: Runnable = runner.getRunnable(

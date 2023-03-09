@@ -373,6 +373,7 @@
             </div>
           </div>
           <ofe-appointments-overview [node]="node"></ofe-appointments-overview>
+          <ofe-hts-risk-category-overview [node]="node"></ofe-hts-risk-category-overview>
           <div *ngIf="hasErrors()">
             <div *ngFor="let e of errors()">
               <span class="text-danger">{{ e }}</span>
