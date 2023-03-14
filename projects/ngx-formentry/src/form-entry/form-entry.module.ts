@@ -44,6 +44,7 @@ import { InputModule } from '../components/input/input.module';
 import { CustomControlWrapperModule } from '../components/custom-control-wrapper/custom-control-wrapper..module';
 import { CustomComponentWrapperModule } from '../components/custom-component-wrapper/custom-component-wrapper..module';
 import { TranslateModule } from '@ngx-translate/core';
+import { MachineLearningService } from './services/machine-learning.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -96,7 +97,8 @@ import { TranslateModule } from '@ngx-translate/core';
     EncounterAdapter,
     PersonAttribuAdapter,
     OrderValueAdapter,
-    DebugModeService
+    DebugModeService,
+    MachineLearningService
   ],
   exports: [
     FormRendererComponent,

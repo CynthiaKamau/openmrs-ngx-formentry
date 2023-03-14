@@ -2,10 +2,13 @@ import { AfeFormControl } from '../../abstract-controls-extension/afe-form-contr
 import { ExpressionRunner } from '../expression-runner/expression-runner';
 import { JsExpressionHelper } from '../helpers/js-expression-helper';
 import { JsExpressionValidationModel } from '../question-models/js-expression-validation.model';
+import { MachineLearningService } from '../services/machine-learning.service';
 import { Validations } from './validations';
 
 export class JsExpressionValidator {
-  constructor() {}
+  constructor(
+    private machineLearningService: MachineLearningService,
+  ) { }
 
   validate(model: JsExpressionValidationModel, form?: any) {
     // convert helper functions to string
@@ -15,7 +18,7 @@ export class JsExpressionValidator {
       }
 
       const expression = model.failsWhenExpression;
-      const helper = new JsExpressionHelper();
+      const helper = new JsExpressionHelper(this.machineLearningService);
       const dataDependencies = {};
 
       const helperFunctions = helper.helperFunctions;

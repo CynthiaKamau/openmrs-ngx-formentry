@@ -14,6 +14,7 @@ import {
   EncounterAdapter,
   DataSources,
   FormErrorsService,
+  MachineLearningService,
 } from '@openmrs/ngx-formentry';
 import { MockObs } from './mock/mock-obs';
 import { mockTranslationsData } from './mock/mock-translations';
@@ -50,7 +51,7 @@ export class AppComponent implements OnInit {
     private formErrorsService: FormErrorsService,
     private http: HttpClient,
     private translate: TranslateService,
-
+    private machineLearningService: MachineLearningService
   ) {
     this.schema = adultForm;
   }

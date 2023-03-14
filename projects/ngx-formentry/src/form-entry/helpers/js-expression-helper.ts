@@ -1,9 +1,15 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { southEastAsiaCvdRiskTables } from './risk-dataset-table';
+import { MachineLearningService } from '@openmrs/ngx-formentry';
+import { Subject } from 'rxjs';
+import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable()
 export class JsExpressionHelper {
+  probabilityForPositivity: any;
+  probabilityForPositivityCategory: any;
+  constructor(private machineLearningService: MachineLearningService) { }
   calcBMI(height, weight) {
     let r;
     if (height && weight) {
@@ -166,18 +172,30 @@ export class JsExpressionHelper {
     return height && weight && refSectionObject ? formattedSDValue : null;
   }
 
-
-
-  calcSouthEastAsiaNonLabCVDRisk(sex: 'M' | 'F', smoker?: boolean, age?: number, sbp?: number, bmi?: number) {
-    const hasValidValues = (typeof sex === "string" && typeof smoker === "boolean" && typeof age === "number" && typeof sbp === "number" && typeof bmi === "number");
+  calcSouthEastAsiaNonLabCVDRisk(
+    sex: 'M' | 'F',
+    smoker?: boolean,
+    age?: number,
+    sbp?: number,
+    bmi?: number
+  ) {
+    const hasValidValues =
+      typeof sex === 'string' &&
+      typeof smoker === 'boolean' &&
+      typeof age === 'number' &&
+      typeof sbp === 'number' &&
+      typeof bmi === 'number';
 
     if (!hasValidValues) {
       return null;
     }
     // Bin functions
-    const getAgeBin = (age) => Math.floor((Math.min(Math.max(40, age), 74) - 40) / 5);
-    const getSbpBin = (sbp) => Math.max(0, Math.floor((Math.min(sbp, 180) - 120) / 20) + 1);
-    const getBmiBin = (bmi) => Math.max(0, Math.floor((Math.min(bmi, 35) - 20) / 5) + 1);
+    const getAgeBin = (age) =>
+      Math.floor((Math.min(Math.max(40, age), 74) - 40) / 5);
+    const getSbpBin = (sbp) =>
+      Math.max(0, Math.floor((Math.min(sbp, 180) - 120) / 20) + 1);
+    const getBmiBin = (bmi) =>
+      Math.max(0, Math.floor((Math.min(bmi, 35) - 20) / 5) + 1);
 
     // Variables
     const sexIdx = sex === 'M' ? 0 : 1;
@@ -186,7 +204,9 @@ export class JsExpressionHelper {
     const bmiIdx = getBmiBin(bmi);
     const sbpIdx = 4 - getSbpBin(sbp);
 
-    return southEastAsiaCvdRiskTables[sexIdx][smokerIdx][ageIdx][sbpIdx][bmiIdx];
+    return southEastAsiaCvdRiskTables[sexIdx][smokerIdx][ageIdx][sbpIdx][
+      bmiIdx
+    ];
   }
 
   isEmpty(val) {
@@ -276,14 +296,108 @@ export class JsExpressionHelper {
    * @param uuid
    * @returns
    */
-  getObsFromControlOrEncounter(targetControl,rawEncounter,uuid): any {
+  getObsFromControlOrEncounter(targetControl, rawEncounter, uuid): any {
     const findObs = (obs, uuid) => {
       let result;
-      obs?.some(o => result = o?.concept?.uuid === uuid ? o : findObs(o.groupMembers || [], uuid));
+      obs?.some(
+        (o) =>
+        (result =
+          o?.concept?.uuid === uuid ? o : findObs(o.groupMembers || [], uuid))
+      );
       return result;
-    }
+    };
     const obsValue = findObs(rawEncounter?.obs, uuid)?.value;
-    return !!targetControl ? targetControl : typeof obsValue === 'object' ? obsValue.uuid : !!obsValue ? obsValue : null
+    return !!targetControl
+      ? targetControl
+      : typeof obsValue === 'object'
+        ? obsValue.uuid
+        : !!obsValue
+          ? obsValue
+          : null;
+  }
+
+  evaluateMLRiskCategory(...args) {
+    let mlRiskCategorty;
+
+    this.machineLearningService.getHTSRiskScore(args).subscribe((r) => { mlRiskCategorty = r, this.probabilityForPositivityCategory = r, console.log("r", typeof r), console.log("r1", mlRiskCategorty) })
+
+    setTimeout(() => {
+      if (mlRiskCategorty !== null && mlRiskCategorty !== undefined) {
+        this.machineLearningService.getHTSRiskScore(args).subscribe((r) => { mlRiskCategorty = r, this.probabilityForPositivityCategory = r, console.log("r", typeof r), console.log("r1", mlRiskCategorty) })
+      }
+    }, 100);
+
+    if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] != false) {
+      const lowRiskThreshold = 0.002625179;
+      const mediumRiskThreshold = 0.010638781;
+      const highRiskThreshold = 0.028924102;
+
+      if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] !== null) {
+        if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] > highRiskThreshold) {
+          return 'Client has a very high probability of a HIV positive test result. Testing is strongly recommended';
+        }
+        if (
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] < highRiskThreshold &&
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] > mediumRiskThreshold
+        ) {
+          return 'Client has a high probability of a HIV positive test result. Testing is strongly recommended';
+        }
+        if (
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] > lowRiskThreshold
+        ) {
+          return 'Client has a medium probability of a HIV positive test result. Testing is recommended';
+        }
+        if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] <= lowRiskThreshold) {
+          return 'Client has a low probability of a HIV positive test result. Testing may not be recommended';
+        }
+      }
+    }
+
+  }
+
+  evaluateMLRiskScore(...args) {
+    let mlRiskCategorty;
+
+    this.machineLearningService.getHTSRiskScore(args).subscribe((r) => { mlRiskCategorty = r, this.probabilityForPositivityCategory = r, console.log("r", typeof r), console.log("r1", mlRiskCategorty) })
+
+    setTimeout(() => {
+      if (mlRiskCategorty !== null && mlRiskCategorty !== undefined) {
+        this.machineLearningService.getHTSRiskScore(args).subscribe((r) => { mlRiskCategorty = r, this.probabilityForPositivityCategory = r, console.log("r", typeof r), console.log("r1", mlRiskCategorty) })
+      }
+    }, 100);
+
+    if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] != false) {
+      const lowRiskThreshold = 0.002625179;
+      const mediumRiskThreshold = 0.010638781;
+      const highRiskThreshold = 0.028924102;
+
+      const highestRiskConcept = '167164AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const highRiskConcept = '1408AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const mediumRiskConcept = '1499AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const lowRiskConcept = '1407AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+
+      if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] !== null) {
+        if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] > highRiskThreshold) {
+          return highestRiskConcept;
+        }
+        if (
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] < highRiskThreshold &&
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] > mediumRiskThreshold
+        ) {
+          return highRiskConcept
+        }
+        if (
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] <= mediumRiskThreshold &&
+          this.probabilityForPositivityCategory.result.predictions['probability(1)'] > lowRiskThreshold
+        ) {
+          return mediumRiskConcept;
+        }
+        if (this.probabilityForPositivityCategory.result.predictions['probability(1)'] <= lowRiskThreshold) {
+          return lowRiskConcept;
+        }
+      }
+    }
+
   }
 
   get helperFunctions() {
@@ -298,7 +412,17 @@ export class JsExpressionHelper {
       isEmpty: helper.isEmpty,
       arrayContains: helper.arrayContains,
       extractRepeatingGroupValues: helper.extractRepeatingGroupValues,
-      getObsFromControlOrEncounter: helper.getObsFromControlOrEncounter
+      getObsFromControlOrEncounter: helper.getObsFromControlOrEncounter,
+      evaluateMLRiskCategory: helper.evaluateMLRiskCategory.bind(helper),
+      evaluateMLRiskScore: helper.evaluateMLRiskScore.bind(helper)
     };
   }
 }
+function getHTSRiskScore(args: any[]) {
+  throw new Error('Function not implemented.');
+}
+
+function displayHTSRiskScore(args: any[]) {
+  throw new Error('Function not implemented.');
+}
+

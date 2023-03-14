@@ -21,6 +21,7 @@ import {
   Runnable
 } from '../expression-runner/expression-runner';
 import { JsExpressionHelper } from '../helpers/js-expression-helper';
+import { MachineLearningService } from '../services/machine-learning.service';
 
 @Injectable()
 export class FormControlService {
@@ -31,7 +32,8 @@ export class FormControlService {
   constructor(
     validationFactory: ValidationFactory,
     hidersDisablersFactory: HidersDisablersFactory,
-    private alertsFactory: AlertsFactory
+    private alertsFactory: AlertsFactory,
+    private machineLearningService: MachineLearningService
   ) {
     this.validationFactory = validationFactory;
     this.hidersDisablersFactory = hidersDisablersFactory;
@@ -198,7 +200,7 @@ export class FormControlService {
     dataSource?: any
   ) {
     if (question.calculateExpression && question.calculateExpression !== '') {
-      const helper: JsExpressionHelper = new JsExpressionHelper();
+      const helper: JsExpressionHelper = new JsExpressionHelper(this.machineLearningService);
       const runner: ExpressionRunner = new ExpressionRunner();
       const runnable: Runnable = runner.getRunnable(
         question.calculateExpression,

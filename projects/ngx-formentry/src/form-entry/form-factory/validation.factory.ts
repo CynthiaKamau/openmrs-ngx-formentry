@@ -20,10 +20,13 @@ import { MaxValidationModel } from '../question-models/max-validation.model';
 import { MinValidationModel } from '../question-models/min-validation.model';
 import { JsExpressionValidationModel } from '../question-models/js-expression-validation.model';
 import { ConditionalValidationModel } from '../question-models/conditional-validation.model';
+import { MachineLearningService } from '../services/machine-learning.service';
 
 @Injectable()
 export class ValidationFactory {
-  constructor() {}
+  constructor(
+    private machineLearningService: MachineLearningService,
+  ) { }
 
   getValidators(question: QuestionBase, form?: any) {
     const list: Array<any> = [];
@@ -134,7 +137,7 @@ export class ValidationFactory {
   }
 
   get jsExpressionValidator() {
-    return new JsExpressionValidator();
+    return new JsExpressionValidator(this.machineLearningService);
   }
 
   public errors(errors: any, question: QuestionBase): Array<string> {
