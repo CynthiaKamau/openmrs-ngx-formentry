@@ -18,7 +18,11 @@ import {
 } from '@openmrs/ngx-formentry';
 import { MockObs } from './mock/mock-obs';
 import { mockTranslationsData } from './mock/mock-translations';
+<<<<<<< HEAD
 import { PatientIdentifierAdapter } from 'projects/ngx-formentry/src/form-entry/value-adapters/patient-identifier.adapter';
+=======
+import { PatientIdenfierAdapater } from 'projects/ngx-formentry/src/form-entry/value-adapters/patient-identifier.adapter';
+>>>>>>> 29f65d7 ((feat) KHP3-3708 Add adapter in form engine to handle creating patient identifiers)
 
 const adultForm = require('./adult-1.6.json');
 const adultFormObs = require('./mock/obs.json');
@@ -53,7 +57,11 @@ export class AppComponent implements OnInit {
     private http: HttpClient,
     private translate: TranslateService,
     private personAttributeAdapter:PersonAttribuAdapter,
+<<<<<<< HEAD
     private patientIdenfierAdapter:PatientIdentifierAdapter
+=======
+    private patientIdenfierAdapter:PatientIdenfierAdapater
+>>>>>>> 29f65d7 ((feat) KHP3-3708 Add adapter in form engine to handle creating patient identifiers)
 
   ) {
     this.schema = adultForm;

@@ -45,7 +45,7 @@ import { InputModule } from '../components/input/input.module';
 import { CustomControlWrapperModule } from '../components/custom-control-wrapper/custom-control-wrapper..module';
 import { CustomComponentWrapperModule } from '../components/custom-component-wrapper/custom-component-wrapper..module';
 import { TranslateModule } from '@ngx-translate/core';
-import { PatientIdentifierAdapter } from './value-adapters/patient-identifier.adapter';
+import { PatientIdenfierAdapater } from './value-adapters/patient-identifier.adapter';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -100,7 +100,7 @@ import { PatientIdentifierAdapter } from './value-adapters/patient-identifier.ad
     OrderValueAdapter,
     DiagnosisValueAdapter,
     DebugModeService,
-    PatientIdentifierAdapter
+    PatientIdenfierAdapater
   ],
   exports: [
     FormRendererComponent,
