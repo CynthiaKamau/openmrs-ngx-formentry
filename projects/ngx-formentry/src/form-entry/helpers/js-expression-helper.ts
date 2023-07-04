@@ -190,6 +190,7 @@ export class JsExpressionHelper {
   }
 
   isEmpty(val) {
+
     if (
       val === undefined ||
       val === null ||
@@ -286,15 +287,17 @@ export class JsExpressionHelper {
     return !!targetControl ? targetControl : typeof obsValue === 'object' ? obsValue.uuid : !!obsValue ? obsValue : null
   }
 
-  evaluateMatchExpression(regexString, val) {
+  doesNotMatchExpression(regexString: string, val: string | null | undefined): boolean {
     if (!val || ['undefined', 'null', ''].includes(val.toString())) {
       return true;
     }
-  
-    const regex = new RegExp(regexString);
-  return !regex.test(val);
+    const pattern = new RegExp(regexString); 
+    if (!pattern.test(val)) {
+      return true;
+    }
+    return false;
   }
-
+                      
   get helperFunctions() {
     const helper = this;
     return {
@@ -308,7 +311,7 @@ export class JsExpressionHelper {
       arrayContains: helper.arrayContains,
       extractRepeatingGroupValues: helper.extractRepeatingGroupValues,
       getObsFromControlOrEncounter: helper.getObsFromControlOrEncounter,
-      evaluateMatchExpression: helper.evaluateMatchExpression
+      doesNotMatchExpression: helper.doesNotMatchExpression
     };
   }
 }
