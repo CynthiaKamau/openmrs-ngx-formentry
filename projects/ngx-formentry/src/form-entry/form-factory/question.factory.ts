@@ -675,6 +675,38 @@ export class QuestionFactory {
     return question;
   }
 
+  toEncounterSubLocationQuestion(schemaQuestion: any): UiSelectQuestion {
+    const question = new UiSelectQuestion({
+      options: [],
+      type: '',
+      key: '',
+      searchFunction: function () {},
+      resolveFunction: function () {}
+    });
+    question.questionIndex = this.quetionIndex;
+    question.label = schemaQuestion.label;
+    question.prefix = schemaQuestion.prefix;
+    question.key = schemaQuestion.id;
+    question.renderingType = schemaQuestion.type;
+    question.renderingType = 'remote-select';
+    question.validators = this.addValidators(schemaQuestion);
+    question.extras = schemaQuestion;
+    question.dataSource = 'subLocation';
+
+    const mappings: any = {
+      label: 'label',
+      required: 'required',
+      id: 'key'
+    };
+    question.componentConfigs = schemaQuestion.componentConfigs || [];
+    this.copyProperties(mappings, schemaQuestion, question);
+    this.addDisableOrHideProperty(schemaQuestion, question);
+    this.addAlertProperty(schemaQuestion, question);
+    this.addHistoricalExpressions(schemaQuestion, question);
+    this.addCalculatorProperty(schemaQuestion, question);
+    return question;
+  }
+
   toTestOrderQuestion(schemaQuestion: any): TestOrderQuestion {
     const question = new TestOrderQuestion({
       type: '',
@@ -844,6 +876,8 @@ export class QuestionFactory {
         return this.toConceptAnswerSelect(schema);
       case 'encounterLocation':
         return this.toEncounterLocationQuestion(schema);
+      case 'encounterSubLocation':
+        return this.toEncounterSubLocationQuestion(schema);
       case 'encounterDatetime':
         return this.toEncounterDatetimeQuestion(schema);
       case 'encounterProvider':

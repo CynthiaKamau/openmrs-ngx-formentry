@@ -72,6 +72,12 @@ export class EncounterAdapter implements ValueAdapter {
             node.initialValue = payload['location'].uuid;
           }
           break;
+        case 'encounterSubLocation':
+          if (payload['subLocation']) {
+            node.control.setValue(payload['subLocation'].name);
+            node.initialValue = payload['subLocation'].name;
+          }
+          break;
         default:
           break;
       }
@@ -121,6 +127,9 @@ export class EncounterAdapter implements ValueAdapter {
             break;
           case 'encounterLocation':
             payload['location'] = node.control.value;
+            break;
+          case 'encounterSubLocation':
+            payload['subLocation'] = node.control.value;
             break;
           default:
             break;
@@ -230,7 +239,8 @@ export class EncounterAdapter implements ValueAdapter {
       node.question.extras &&
       (node.question.extras.type === 'encounterDatetime' ||
         node.question.extras.type === 'encounterProvider' ||
-        node.question.extras.type === 'encounterLocation')
+        node.question.extras.type === 'encounterLocation' ||
+        node.question.extras.type === 'encounterSubLocation')
     ) {
       return true;
     }
